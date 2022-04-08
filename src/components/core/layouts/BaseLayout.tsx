@@ -1,19 +1,57 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
-import { IoAddOutline } from "react-icons/io5";
-import NewNoteModal from "../../modals/NewNoteModal";
 import ThemeDropdown from "../../ThemeDropdown";
 
 const BaseLayout: React.FC = ({ children }) => {
-  const { pathname } = useRouter();
-  const [open, setOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { pathname, back, push } = useRouter();
+
+  // const handleScroll = useCallback(() => {
+  //   const el = document.querySelector(".nav-btns")!.classList;
+  //   if (window.scrollY > 200) {
+  //     if (!el.contains("bg-neutral")) el.add("bg-neutral");
+  //   } else {
+  //     el.remove("bg-neutral");
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [handleScroll]);
+
   return (
-    <div className="flex flex-col min-h-screen  h-screen antialiased mx-auto sm:px-5">
-      <div className="w-full relative max-h-12 py-12 h-full flex items-center justify-center ">
-        <div className="fixed top-0 sm:backdrop-blur-sm py-6 px-10 w-full flex flex-row items-center justify-between">
-          <ThemeDropdown />
+    <div className="flex flex-col h-screen min-h-screen pb-8 mx-auto antialiased sm:px-5">
+      <div className="relative flex items-center justify-center w-full h-full py-12 max-h-12 ">
+        <div className="fixed top-0 z-10 flex flex-row items-center justify-between w-full px-6 py-5 sm:backdrop-blur-sm sm:px-10">
+          <div className="flex flex-row space-x-4 nav-btns sm:space-x-6 ">
+            <ThemeDropdown />
+            <label
+              tabIndex={0}
+              title="go back"
+              onClick={back}
+              className="z-10 w-12 px-2 rounded-full btn-accent h-7 btn "
+            >
+              <svg
+                className="w-7 h-7"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M2.508 14c0-.483.392-.875.875-.875h21a.875.875 0 1 1 0 1.75h-21A.875.875 0 0 1 2.508 14Z"
+                  fill="currentColor"
+                />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M11.002 6.381a.875.875 0 0 1 0 1.238L4.62 14l6.381 6.381a.875.875 0 1 1-1.237 1.238l-7-7a.875.875 0 0 1 0-1.238l7-7a.875.875 0 0 1 1.238 0Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </label>
+          </div>
           <Link href="/">
             <a className="text-lg font-semibold tracking-wider">Nonic</a>
           </Link>
@@ -22,28 +60,33 @@ const BaseLayout: React.FC = ({ children }) => {
 
       {pathname !== "/" && (
         <label
+          onClick={() => push("/new")}
           tabIndex={0}
-          className="bg-accent-content fixed sm:hidden border-accent-content bottom-10 z-10 right-10 btn rounded-full p-2 "
+          className="fixed z-10 px-2 rounded-full btn-accent sm:hidden sm:bottom-10 sm:right-10 right-5 bottom-10 btn "
         >
-          <IoAddOutline size={28} className="text-accent" onClick={() => {}} />
+          <svg
+            className="w-7 h-7"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M14.037 4.958c.483 0 .874.393.873.876l-.021 16.334a.875.875 0 1 1-1.75-.002l.021-16.334c.001-.483.393-.874.877-.874Z"
+              fill="currentColor"
+            />
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M4.958 14c0-.483.392-.875.875-.875h16.334a.875.875 0 0 1 0 1.75H5.833A.875.875 0 0 1 4.958 14Z"
+              fill="currentColor"
+            />
+          </svg>
         </label>
       )}
-      <div className="max-w-[1600px] w-full mx-auto relative h-full">
-        <div className="flex items-center justify-center">
-          <input
-            onClick={() => {
-              setOpen((x) => !x);
-            }}
-            type="text"
-            placeholder="Type here"
-            className="input z-10 absolute hidden sm:block sm:top-6 modal-button w-full max-w-sm sm:max-w-xl lg:max-w-4xl input-bordered h-14"
-          />
-        </div>
+      <div className="max-w-[1400px] w-full mx-auto relative h-full">
         {children}
       </div>
-      {open && (
-        <NewNoteModal inputRef={inputRef} onClose={() => setOpen(false)} />
-      )}
     </div>
   );
 };

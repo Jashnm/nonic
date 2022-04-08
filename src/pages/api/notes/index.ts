@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "../../lib/mongodb";
-import Note, { INote } from "../../models/Note";
+import { connectToDatabase } from "../../../lib/mongodb";
+import Note, { INote } from "../../../models/Note";
 type Data = {
   notes?: any;
 };
@@ -21,7 +21,13 @@ export default async function handler(
   }
 
   if (req.method === "GET") {
-    let notes = await Note.find({}).lean();
+    const { page = 0, perPage = 25, query } = req.query;
+
+    let notes = await Note.find({})
+      .sort({ updatedAt: -1 })
+      .skip(Number(perPage) * Number(page))
+      .limit(Number(perPage))
+      .lean();
 
     notes = notes.map((x) => ({ ...x, _id: x._id.toString() }));
 

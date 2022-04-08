@@ -26,7 +26,7 @@ const NewNoteModal: React.FC<{
     e.preventDefault();
     setLoading(true);
     try {
-      await fetch("api", {
+      await fetch("api/notes", {
         method: "POST",
         body: JSON.stringify({ title, content })
       });

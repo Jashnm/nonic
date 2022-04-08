@@ -5,6 +5,13 @@ import React, { useEffect, useState } from "react";
 import { NextComponentType, NextPageContext } from "next";
 import { LazyMotion, domMax } from "framer-motion";
 import ThemeDropdown from "../components/ThemeDropdown";
+import dynamic from "next/dynamic";
+import { SWRConfig } from "swr";
+const Toaster = dynamic(
+  // @ts-ignore
+  () => import("react-hot-toast").then((mod) => mod.Toaster),
+  { ssr: false }
+);
 
 const AnyComp: React.FC = ({ children }) => <>{children}</>;
 function MyApp({
@@ -23,11 +30,25 @@ function MyApp({
   }, []);
   const Layout = Component.Layout || AnyComp;
   return (
-    <LazyMotion features={domMax} strict>
-      <Layout pageProps={pageProps}>
-        <Component {...pageProps} />
-      </Layout>
-    </LazyMotion>
+    <SWRConfig
+      value={{
+        refreshInterval: 5000,
+        fetcher: (resource, init) =>
+          fetch(resource, init).then((res) => res.json())
+      }}
+    >
+      <LazyMotion features={domMax} strict>
+        <Layout pageProps={pageProps}>
+          <Component {...pageProps} />
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              className: "text-sm bg-accent text-accent-content font-medium"
+            }}
+          />
+        </Layout>
+      </LazyMotion>
+    </SWRConfig>
   );
 }
 

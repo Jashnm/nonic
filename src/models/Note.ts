@@ -5,8 +5,8 @@ export interface INote {
   content: string;
   title: string;
   locked?: boolean;
-  createdAt?: string;
-  upDatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const NoteSchema = new mongoose.Schema<INote>(
