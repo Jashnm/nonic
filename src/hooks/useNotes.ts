@@ -9,7 +9,7 @@ type getNotesTypes = {
 export default function useNotes({ perPage = 25, query }: getNotesTypes) {
   let queryString = `/api/notes?perPage=${perPage}`;
 
-  if (query) queryString += `&query=${query}`;
+  if (!!query) queryString += `&query=${query}`;
 
   const { data, error, mutate, size, setSize } = useSWRInfinite<{
     notes: INote[];

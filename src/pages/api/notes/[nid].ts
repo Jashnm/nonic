@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../../lib/mongodb";
 import Note, { INote } from "../../../models/Note";
+import { decrypt } from "../../../utils/cipher";
 type Data = {
   note?: INote;
 };
@@ -30,6 +31,9 @@ export default async function handler(
       res.status(404).end();
     }
 
-    res.status(200).json({ note });
+    const key = process.env.CIPHR_KEY! as string;
+    res
+      .status(200)
+      .json({ note: { ...note, content: await decrypt(note.content, key) } });
   }
 }

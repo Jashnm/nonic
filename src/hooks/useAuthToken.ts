@@ -7,17 +7,17 @@ const useTokenStore = create<{
 }>((set) => ({
   authToken:
     typeof window !== "undefined"
-      ? localStorage.getItem("nonic-token") || ""
+      ? sessionStorage.getItem("nonic-token") || ""
       : "",
 
   setAuthToken: (token: string) => {
     set((state) => ({ ...state, authToken: token }));
-    localStorage.setItem("nonic-token", token);
+    sessionStorage.setItem("nonic-token", token);
   },
 
   logOut: () => {
     set((state) => ({ ...state, authToken: undefined }));
-    localStorage.removeItem("nonic-token");
+    sessionStorage.removeItem("nonic-token");
   }
 }));
 

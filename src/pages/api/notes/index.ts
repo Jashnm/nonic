@@ -4,7 +4,9 @@ import { connectToDatabase } from "../../../lib/mongodb";
 import Note, { INote } from "../../../models/Note";
 type Data = {
   notes?: any;
+  _id?: string;
 };
+import { encrypt } from "../../../utils/cipher";
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,16 +15,39 @@ export default async function handler(
   await connectToDatabase();
 
   if (req.method === "POST") {
-    const { content, title } = JSON.parse(req.body);
-    const note = new Note({ content, title });
+    const { content, title } = req.body as { content: string; title: string };
+    const key = process.env.CIPHR_KEY! as string;
+    const encoded = await encrypt(content, key);
+    const note = new Note({ content: encoded, title });
     await note.save();
 
-    res.status(201).end();
+    return res.status(201).json({ _id: note._id });
   }
 
   if (req.method === "GET") {
     const { page = 0, perPage = 25, query } = req.query;
 
+    if (!!query) {
+      let notes = await Note.aggregate([
+        {
+          $match: {
+            $or: [{ $text: { $search: query } }]
+          }
+        },
+
+        {
+          $sort: {
+            score: { $meta: "textScore" }
+          }
+        }
+      ])
+        .skip(Number(perPage) * Number(page))
+        .limit(Number(perPage));
+
+      notes = notes.map((x) => ({ ...x, _id: x._id.toString() }));
+
+      return res.status(200).json({ notes });
+    }
     let notes = await Note.find({})
       .sort({ updatedAt: -1 })
       .skip(Number(perPage) * Number(page))

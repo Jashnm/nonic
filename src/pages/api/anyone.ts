@@ -1,12 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "../../../lib/mongodb";
-import User from "../../../models/User";
+import { connectToDatabase } from "../../lib/mongodb";
+import User from "../../models/User";
 import argon2 from "argon2";
-import { IUser } from "../../../models/User";
 
 type Data = {
-  user?: { _id: string; name: string };
+  exists: boolean;
 };
 
 export default async function handler(
@@ -16,9 +15,9 @@ export default async function handler(
   await connectToDatabase();
 
   if (req.method === "GET") {
-    const users = await User.find({}).limit(1);
-    const user = users[0] as IUser;
+    const user = await User.find({}).limit(1);
 
-    return res.status(200).json({ user: { name: user.name, _id: user._id } });
+    if (!user.length) return res.status(200).json({ exists: false });
+    else return res.status(200).json({ exists: true });
   }
 }

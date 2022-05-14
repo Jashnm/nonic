@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { verifyAuth } from "../../../lib/auth";
 import { jsonResponse } from "../../../lib/utils";
@@ -6,11 +6,7 @@ import { jsonResponse } from "../../../lib/utils";
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  if (url.searchParams.has("edge")) {
-    const resOrPayload = await verifyAuth(req);
+  const resOrPayload = await verifyAuth(req);
 
-    return resOrPayload instanceof Response
-      ? resOrPayload
-      : jsonResponse(200, { nanoid: nanoid(), jwtID: resOrPayload.id });
-  }
+  return resOrPayload instanceof Response ? resOrPayload : NextResponse.next();
 }

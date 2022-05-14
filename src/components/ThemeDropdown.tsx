@@ -10,7 +10,6 @@ const themes = [
   "synthwave",
   "halloween",
   "garden",
-  "forest",
   "aqua",
   "lofi",
   "luxury",

@@ -7,6 +7,7 @@ import { LazyMotion, domMax } from "framer-motion";
 import ThemeDropdown from "../components/ThemeDropdown";
 import dynamic from "next/dynamic";
 import { SWRConfig } from "swr";
+import axios from "../lib/axios";
 const Toaster = dynamic(
   // @ts-ignore
   () => import("react-hot-toast").then((mod) => mod.Toaster),
@@ -33,20 +34,19 @@ function MyApp({
     <SWRConfig
       value={{
         refreshInterval: 5000,
-        fetcher: (resource, init) =>
-          fetch(resource, init).then((res) => res.json())
+        fetcher: (resource, init) => axios.get(resource).then((res) => res.data)
       }}
     >
       <LazyMotion features={domMax} strict>
         <Layout pageProps={pageProps}>
           <Component {...pageProps} />
-          <Toaster
-            position="bottom-center"
-            toastOptions={{
-              className: "text-sm bg-accent text-accent-content font-medium"
-            }}
-          />
         </Layout>
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            className: "text-sm bg-accent text-accent-content font-medium"
+          }}
+        />
       </LazyMotion>
     </SWRConfig>
   );

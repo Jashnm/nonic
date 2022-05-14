@@ -9,7 +9,7 @@ interface CurrentUserResponse {
 export default function useUser() {
   const authToken = useAuthToken((state) => state.authToken);
   const { data, mutate, error } = useSWR<CurrentUserResponse>(
-    authToken ? "/api/profile" : null
+    authToken ? "/profile?edge" : null
   );
 
   const loading = !data && !error;

@@ -19,25 +19,24 @@ export default async function handler(
   await connectToDatabase();
 
   if (req.method === "POST") {
-    const { pin, name } = req.body;
+    const { pin, secret } = req.body;
+    const user = await User.findOne({ email: process.env.MY_EMAIL });
 
-    const userExists = await User.countDocuments({});
-
-    if (userExists) {
-      return res.status(400).json({ exists: true });
+    if (!user) {
+      return res.status(400).json({ exists: false });
     }
 
-    const hashedPin = await argon2.hash(pin, {
-      type: argon2.argon2d,
-      hashLength: 36
-    });
+    if (process.env.MY_SECRET === secret) {
+      const hashedPin = await argon2.hash(pin, {
+        type: argon2.argon2d,
+        hashLength: 36
+      });
+      user.pin = hashedPin;
 
-    const user = new User({
-      email: process.env.MY_EMAIL,
-      name,
-      pin: hashedPin
-    });
-    await user.save();
-    return res.status(201).json({ token: signJwt(user._id), loggedIn: true });
+      await user.save();
+      return res.status(200).end();
+    }
+
+    return res.status(400).end();
   }
 }

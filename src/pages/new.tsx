@@ -4,6 +4,8 @@ import { INote } from "../models/Note";
 import { ExtendedNextPage } from "../next";
 
 import toast from "react-hot-toast";
+import Router from "next/router";
+import axios from "../lib/axios";
 
 const NewNotePage: ExtendedNextPage = () => {
   const [title, setTitle] = useState<string | undefined>("");
@@ -15,12 +17,14 @@ const NewNotePage: ExtendedNextPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await fetch(`/api/notes/`, {
-        method: "POST",
-        body: JSON.stringify({ title, content })
-      });
+      const { data } = await axios.post<{ _id?: string }>(
+        `/notes/`,
+
+        { title, content }
+      );
 
       toast.success("Added!");
+      Router.push(`/notes/${data._id}`);
     } catch (error) {
       console.log(error);
     }

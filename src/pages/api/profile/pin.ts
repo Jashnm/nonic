@@ -6,11 +6,7 @@ import User from "../../../models/User";
 import jwt from "jsonwebtoken";
 import { signJwt } from "../../../lib/auth";
 
-type Data = {
-  loggedIn?: boolean;
-  exists?: boolean;
-  token?: string;
-};
+type Data = any;
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,26 +14,31 @@ export default async function handler(
 ) {
   await connectToDatabase();
 
-  if (req.method === "POST") {
-    const { pin, name } = req.body;
+  if (req.method === "PUT") {
+    const { oldPin, newPin } = req.body;
 
-    const userExists = await User.countDocuments({});
+    const user = await User.findOne({ email: process.env.MY_EMAIL });
 
-    if (userExists) {
-      return res.status(400).json({ exists: true });
+    if (!user) {
+      return res.status(400).json({ exists: false });
     }
 
-    const hashedPin = await argon2.hash(pin, {
+    const isCorrectPin = await argon2.verify(user.pin, oldPin, {
       type: argon2.argon2d,
       hashLength: 36
     });
 
-    const user = new User({
-      email: process.env.MY_EMAIL,
-      name,
-      pin: hashedPin
+    if (!isCorrectPin) {
+      return res.status(400).json({ message: "Invalid Pin" });
+    }
+
+    const hashedPin = await argon2.hash(newPin, {
+      type: argon2.argon2d,
+      hashLength: 36
     });
+    user.pin = hashedPin;
+
     await user.save();
-    return res.status(201).json({ token: signJwt(user._id), loggedIn: true });
+    return res.status(200).end();
   }
 }

@@ -8,6 +8,8 @@ import { INote } from "../../models/Note";
 import { useCallback, useRef, useState } from "react";
 import useNotes from "../../hooks/useNotes";
 import Spinner from "../../components/core/Spinner";
+import useTokenStore from "../../hooks/useAuthToken";
+import axios from "../../lib/axios";
 
 const NotesPage: ExtendedNextPage = ({ notes }) => {
   const [search, setSearch] = useState("");
@@ -25,7 +27,7 @@ const NotesPage: ExtendedNextPage = ({ notes }) => {
     loading,
     fetchNextPage,
     hasNextPage
-  } = useNotes({});
+  } = useNotes({ query: search.length >= 3 ? search : "" });
 
   const lastThoughtElementRef = useCallback(
     (node) => {
@@ -61,7 +63,7 @@ const NotesPage: ExtendedNextPage = ({ notes }) => {
         />
       </div>
       <div className="sm:mt-36 mt-20" />
-      <div className="grid grid-flow-row sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto mx-4 gap-6 flex-col flex-wrap sm:flex-row justify-center">
+      <div className="grid grid-flow-row pb-6 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto mx-4 gap-6 flex-col flex-wrap sm:flex-row justify-center">
         {notes_?.map((x: INote) => {
           return <NoteCard key={x._id} note={x} />;
         })}
@@ -83,8 +85,24 @@ export default NotesPage;
 
 export const getStaticProps: GetStaticProps = async (context) => {
   try {
-    const res = await fetch(`${process.env.BASE_URL}/api/notes`);
+    const res = await fetch(`${process.env.BASE_URL}/api/notes`, {
+      headers: {
+        authorization: `bearer ${useTokenStore.getState().authToken}` || ""
+      }
+    });
+    //@ts-ignore
+    if (res.json().error.message === "Your token has expired") {
+      return {
+        props: {},
+        redirect: {
+          destination: "/",
+          statusCode: 401
+        }
+      };
+    }
+
     const notes = await res.json();
+
 
     return {
       props: notes

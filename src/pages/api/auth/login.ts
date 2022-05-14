@@ -25,7 +25,7 @@ export default async function handler(
     return res.status(200).json({ exists: false, loggedIn: false });
   }
 
-  const { pin } = JSON.parse(req.body);
+  const { pin } = req.body;
 
   try {
     if (

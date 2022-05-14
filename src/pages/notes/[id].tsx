@@ -33,7 +33,7 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
 
   return (
     <>
-      <div className="flex h-fit flex-col items-center space-y-3 mb-6">
+      <div className="flex h-fit flex-col items-center space-y-3 pb-6">
         <h2 className="text-center text-lg">{note.title}</h2>
         <div className="flex space-x-4">
           <time
@@ -82,7 +82,7 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
         ) : (
           <div className="relative w-full">
             <div
-              className="min-h-[242px]  max-w-none prose prose-img:text-center prose-img:w-80 prose-base lg:prose-lg px-4 py-2 textarea textarea-bordered h-full"
+              className="min-h-[242px] max-w-none prose prose-img:text-center prose-img:w-80 prose-base lg:prose-lg px-4 py-2 textarea textarea-bordered h-full"
               dangerouslySetInnerHTML={{ __html: md.render(content) }}
             ></div>
             <label
@@ -134,12 +134,18 @@ IndividualNotePage.Layout = BaseLayout;
 
 export default IndividualNotePage;
 
+//@ts-ignore
 export const getStaticPaths: GetStaticPaths = async () => {
   // Call an external API endpoint to get posts
   const res = await fetch(`${process.env.BASE_URL}/api/notes`);
+  
   const notes = await res.json();
 
-  const paths = notes.notes.map((note: INote) => ({
+  if (res.status === 401) {
+    return { paths: [], fallback: "blocking" };
+  }
+
+  const paths = notes.notes?.map((note: INote) => ({
     params: { id: note._id }
   }));
 
@@ -149,6 +155,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
     const res = await fetch(`${process.env.BASE_URL}/api/notes/${params?.id}`);
+
+    if (res.status === 401) {
+      return {
+        props: {}
+      };
+    }
     const note = await res.json();
 
     return {
