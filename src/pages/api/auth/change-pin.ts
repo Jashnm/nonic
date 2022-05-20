@@ -3,8 +3,6 @@ import argon2 from "argon2";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../../lib/mongodb";
 import User from "../../../models/User";
-import jwt from "jsonwebtoken";
-import { signJwt } from "../../../lib/auth";
 
 type Data = {
   loggedIn?: boolean;
@@ -20,7 +18,7 @@ export default async function handler(
 
   if (req.method === "POST") {
     const { pin, secret } = req.body;
-    const user = await User.findOne({ email: process.env.MY_EMAIL });
+    const user = await User.findOne({});
 
     if (!user) {
       return res.status(400).json({ exists: false });

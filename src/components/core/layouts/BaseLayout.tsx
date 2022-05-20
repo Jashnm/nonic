@@ -75,7 +75,7 @@ const BaseLayout: React.FC = ({ children }) => {
             </div>
           </div>
 
-          {pathname !== "/" && (
+          {pathname !== "/" && pathname !== "/new" && (
             <label
               onClick={() => push("/new")}
               tabIndex={0}

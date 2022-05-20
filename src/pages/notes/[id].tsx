@@ -4,15 +4,42 @@ import BaseLayout from "../../components/core/layouts/BaseLayout";
 import { INote } from "../../models/Note";
 import { ExtendedNextPage } from "../../next";
 import md from "../../utils/markdown";
-import { MdEdit } from "react-icons/md";
 import toast from "react-hot-toast";
 import { getRelativeTime } from "../../utils/dayjs";
+import {
+  boldCommand,
+  codeCommand,
+  headingLevel1Command,
+  headingLevel2Command,
+  headingLevel3Command,
+  imageCommand,
+  italicCommand,
+  linkCommand,
+  orderedListCommand,
+  unorderedListCommand,
+  useTextAreaMarkdownEditor
+} from "react-mde";
+import Toolbar from "../../components/editor/Toolbar";
 
 const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
   const [title, setTitle] = useState<string | undefined>(note.title || "");
   const [content, setContent] = useState<string>(note.content || "");
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
+  const { ref, commandController, textController } = useTextAreaMarkdownEditor({
+    commandMap: {
+      bold: boldCommand,
+      italic: italicCommand,
+      code: codeCommand,
+      image: imageCommand,
+      head1: headingLevel1Command,
+      head2: headingLevel2Command,
+      head3: headingLevel3Command,
+      orderedList: orderedListCommand,
+      unorderedList: unorderedListCommand,
+      link: linkCommand
+    }
+  });
 
   const onUpdate = async (e: FormEvent) => {
     e.preventDefault();
@@ -20,7 +47,7 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
     try {
       await fetch(`/api/notes/${note._id}`, {
         method: "PUT",
-        body: JSON.stringify({ title, content })
+        body: JSON.stringify({ title, content: ref.current?.value })
       });
 
       toast.success("Updated!");
@@ -33,8 +60,8 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
 
   return (
     <>
-      <div className="flex h-fit flex-col items-center space-y-3 pb-6">
-        <h2 className="text-center text-lg">{note.title}</h2>
+      <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
+        <h2 className="text-lg text-center">{note.title}</h2>
         <div className="flex space-x-4">
           <time
             dateTime={note.createdAt}
@@ -51,7 +78,7 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
         </div>
       </div>
       <form
-        className="flex mt-4 mx-1 h-full flex-col space-y-4"
+        className="flex flex-col h-full mx-1 mt-4 space-y-4"
         onSubmit={onUpdate}
       >
         <input
@@ -59,26 +86,31 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
-          className="input w-full flex-shrink-0 input-bordered"
+          className="flex-shrink-0 w-full input input-bordered"
         />
-        {/* 
-            <MDEditor
-              value={value}
-              onChange={setValue}
-              hideToolbar={true}
-              fullscreen={false}
-              height={400}
-              className="bg-primary"
-              placeholder="Contnent in markdown"
-            /> */}
+
         {edit ? (
-          <textarea
+          <>
+            <div className="flex flex-col">
+              <Toolbar
+                commandController={commandController}
+                textController={textController}
+              />
+              <textarea
+                className="textarea min-h-[480px] md:min-h-[580px] textarea-bordered rounded-tl-none"
+                ref={ref}
+                placeholder="I'm a markdown editor"
+              />
+            </div>
+
+            {/* <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="textarea min-h-[480px] sm:min-h-[560px] textarea-bordered"
             placeholder="Markdown supported content"
             rows={8}
-          ></textarea>
+            ></textarea> */}
+          </>
         ) : (
           <div className="relative w-full">
             <div
@@ -89,7 +121,7 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
               tabIndex={0}
               title="edit"
               onClick={() => setEdit(true)}
-              className="bg-accent-content cursor-pointer absolute border-accent-content top-4 z-10 right-4 p-2 rounded-full"
+              className="absolute z-10 p-2 rounded-full cursor-pointer bg-accent-content border-accent-content top-4 right-4"
             >
               <svg
                 className="text-accent w-7 h-7"
@@ -113,7 +145,7 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
           </div>
         )}
         {edit && (
-          <div className="flex space-x-4 justify-end">
+          <div className="flex justify-end space-x-4">
             <button
               onClick={() => setEdit(false)}
               className={`btn btn-accent px-8 ${loading && "loading"}`}
@@ -137,8 +169,9 @@ export default IndividualNotePage;
 //@ts-ignore
 export const getStaticPaths: GetStaticPaths = async () => {
   // Call an external API endpoint to get posts
-  const res = await fetch(`${process.env.BASE_URL}/api/notes`);
-  
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notes`);
+
   const notes = await res.json();
 
   if (res.status === 401) {
@@ -154,7 +187,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
-    const res = await fetch(`${process.env.BASE_URL}/api/notes/${params?.id}`);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/notes/${params?.id}`
+    );
 
     if (res.status === 401) {
       return {

@@ -18,4 +18,14 @@
     stroke-linecap: round;
     animation: dash 1.5s ease-in-out infinite;
   }
+
+  .wrapper-class {
+    @apply p-1;
+  }
+  .editor-class {
+    @apply bg-neutral p-2;
+  }
+  .toolbar-class {
+    @apply text-accent-content;
+  }
 }

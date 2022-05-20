@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 export interface IUser {
   _id: string;
   name: string;
-  email: string;
+
   pin?: string;
   createdAt: string;
   updatedAt: string;
@@ -12,7 +12,6 @@ export interface IUser {
 const UserSchema = new mongoose.Schema<IUser>(
   {
     name: String,
-    email: { type: String, required: true },
     pin: { type: String, required: true }
   },
   { timestamps: true }

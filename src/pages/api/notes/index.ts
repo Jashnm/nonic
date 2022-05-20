@@ -6,13 +6,15 @@ type Data = {
   notes?: any;
   _id?: string;
 };
-import { encrypt } from "../../../utils/cipher";
+import { decrypt, encrypt } from "../../../utils/cipher";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
   await connectToDatabase();
+
+  const key = process.env.CIPHR_KEY! as string;
 
   if (req.method === "POST") {
     const { content, title } = req.body as { content: string; title: string };
@@ -44,7 +46,13 @@ export default async function handler(
         .skip(Number(perPage) * Number(page))
         .limit(Number(perPage));
 
-      notes = notes.map((x) => ({ ...x, _id: x._id.toString() }));
+      notes = await Promise.all(
+        notes.map(async (x) => ({
+          ...x,
+          _id: x._id.toString(),
+          content: await decrypt(x.content, key)
+        }))
+      );
 
       return res.status(200).json({ notes });
     }
@@ -54,7 +62,15 @@ export default async function handler(
       .limit(Number(perPage))
       .lean();
 
-    notes = notes.map((x) => ({ ...x, _id: x._id.toString() }));
+    // console.log(notes);
+
+    notes = await Promise.all(
+      notes.map(async (x) => ({
+        ...x,
+        _id: x._id.toString(),
+        content: await decrypt(x.content, key)
+      }))
+    );
 
     res.status(200).json({ notes });
   }

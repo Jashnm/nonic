@@ -1,26 +1,53 @@
 import React, { FormEvent, useState } from "react";
 import BaseLayout from "../components/core/layouts/BaseLayout";
-import { INote } from "../models/Note";
 import { ExtendedNextPage } from "../next";
-
 import toast from "react-hot-toast";
 import Router from "next/router";
 import axios from "../lib/axios";
+import {
+  boldCommand,
+  codeCommand,
+  headingLevel1Command,
+  headingLevel2Command,
+  headingLevel3Command,
+  imageCommand,
+  italicCommand,
+  linkCommand,
+  orderedListCommand,
+  unorderedListCommand,
+  useTextAreaMarkdownEditor
+} from "react-mde";
+import Toolbar from "../components/editor/Toolbar";
 
 const NewNotePage: ExtendedNextPage = () => {
   const [title, setTitle] = useState<string | undefined>("");
-  const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
+
+  const { ref, commandController, textController } = useTextAreaMarkdownEditor({
+    commandMap: {
+      bold: boldCommand,
+      italic: italicCommand,
+      code: codeCommand,
+      image: imageCommand,
+      head1: headingLevel1Command,
+      head2: headingLevel2Command,
+      head3: headingLevel3Command,
+      orderedList: orderedListCommand,
+      unorderedList: unorderedListCommand,
+      link: linkCommand
+    }
+  });
 
   const onUpdate = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const { data } = await axios.post<{ _id?: string }>(
         `/notes/`,
 
-        { title, content }
+        { title, content: ref.current?.value }
       );
 
       toast.success("Added!");
@@ -42,24 +69,28 @@ const NewNotePage: ExtendedNextPage = () => {
           placeholder="Title"
           className="input w-full  input-bordered"
         />
-        {/* 
-            <MDEditor
-              value={value}
-              onChange={setValue}
-              hideToolbar={true}
-              fullscreen={false}
-              height={400}
-              className="bg-primary"
-              placeholder="Contnent in markdown"
-            /> */}
 
-        <textarea
+        {/* Enable Designated Markdown editor */}
+        <div className="flex flex-col">
+          <Toolbar
+            commandController={commandController}
+            textController={textController}
+          />
+          <textarea
+            className="textarea min-h-[480px] md:min-h-[580px] textarea-bordered rounded-tl-none"
+            ref={ref}
+            placeholder="I'm a markdown editor"
+          />
+        </div>
+
+        {/* Enable simple textarea */}
+        {/* <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="textarea textarea-bordered"
           placeholder="Markdown supported content"
           rows={8}
-        ></textarea>
+        ></textarea> */}
 
         <div className="flex space-x-4 justify-end">
           <button

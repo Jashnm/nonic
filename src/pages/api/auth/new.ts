@@ -3,7 +3,6 @@ import argon2 from "argon2";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../../lib/mongodb";
 import User from "../../../models/User";
-import jwt from "jsonwebtoken";
 import { signJwt } from "../../../lib/auth";
 
 type Data = {
@@ -33,7 +32,6 @@ export default async function handler(
     });
 
     const user = new User({
-      email: process.env.MY_EMAIL,
       name,
       pin: hashedPin
     });

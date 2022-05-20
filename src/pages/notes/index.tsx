@@ -1,24 +1,14 @@
 import Head from "next/head";
 import BaseLayout from "../../components/core/layouts/BaseLayout";
 import { ExtendedNextPage } from "../../next";
-
 import NoteCard from "../../components/core/NoteCard";
-import { GetStaticProps } from "next";
 import { INote } from "../../models/Note";
 import { useCallback, useRef, useState } from "react";
 import useNotes from "../../hooks/useNotes";
 import Spinner from "../../components/core/Spinner";
-import useTokenStore from "../../hooks/useAuthToken";
-import axios from "../../lib/axios";
 
-const NotesPage: ExtendedNextPage = ({ notes }) => {
+const NotesPage: ExtendedNextPage = () => {
   const [search, setSearch] = useState("");
-
-  // const { data } = useSWR<{ notes: INote[] }>("/api/notes", {
-  //   fallbackData: notes,
-  //   refreshInterval: 20000
-  // });
-
   const loader = useRef<IntersectionObserver>();
 
   const {
@@ -59,11 +49,11 @@ const NotesPage: ExtendedNextPage = ({ notes }) => {
           value={search}
           type="text"
           placeholder="Search here (min 3 words)"
-          className="input z-10 absolute top-0 sm:top-6 modal-button w-full max-w-xs sm:max-w-xl lg:max-w-4xl input-bordered flex-shrink-0"
+          className="absolute top-0 z-10 flex-shrink-0 w-full max-w-xs input sm:top-6 modal-button sm:max-w-xl lg:max-w-4xl input-bordered"
         />
       </div>
-      <div className="sm:mt-36 mt-20" />
-      <div className="grid grid-flow-row pb-6 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto mx-4 gap-6 flex-col flex-wrap sm:flex-row justify-center">
+      <div className="mt-20 sm:mt-36" />
+      <div className="grid flex-col flex-wrap justify-center grid-flow-row gap-6 pb-6 mx-4 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto sm:flex-row">
         {notes_?.map((x: INote) => {
           return <NoteCard key={x._id} note={x} />;
         })}
@@ -82,36 +72,3 @@ const NotesPage: ExtendedNextPage = ({ notes }) => {
 NotesPage.Layout = BaseLayout;
 
 export default NotesPage;
-
-export const getStaticProps: GetStaticProps = async (context) => {
-  try {
-    const res = await fetch(`${process.env.BASE_URL}/api/notes`, {
-      headers: {
-        authorization: `bearer ${useTokenStore.getState().authToken}` || ""
-      }
-    });
-    //@ts-ignore
-    if (res.json().error.message === "Your token has expired") {
-      return {
-        props: {},
-        redirect: {
-          destination: "/",
-          statusCode: 401
-        }
-      };
-    }
-
-    const notes = await res.json();
-
-
-    return {
-      props: notes
-    };
-  } catch (error) {
-    console.log(error);
-
-    return {
-      props: {} // will be passed to the page component as props
-    };
-  }
-};

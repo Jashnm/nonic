@@ -7,7 +7,9 @@ type getNotesTypes = {
 };
 
 export default function useNotes({ perPage = 25, query }: getNotesTypes) {
-  let queryString = `/api/notes?perPage=${perPage}`;
+  let queryString = `/notes?perPage=${perPage}`;
+
+  console.log("heyy");
 
   if (!!query) queryString += `&query=${query}`;
 
