@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { RiPaintFill } from "react-icons/ri";
 
 const themes = [
   "light",

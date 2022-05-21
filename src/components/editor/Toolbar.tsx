@@ -1,16 +1,15 @@
 import React, { ChangeEvent, useRef } from "react";
 import { ToolbarButton } from "../core/ToolbarButton";
-import {
-  FaBold,
-  FaItalic,
-  FaCode,
-  FaListOl,
-  FaListUl,
-  FaImage,
-  FaHeading,
-  FaImages,
-  FaLink
-} from "react-icons/fa";
+import { FaBold } from "@react-icons/all-files/fa/FaBold";
+import { FaItalic } from "@react-icons/all-files/fa/FaItalic";
+import { FaCode } from "@react-icons/all-files/fa/FaCode";
+import { FaListOl } from "@react-icons/all-files/fa/FaListOl";
+import { FaListUl } from "@react-icons/all-files/fa/FaListUl";
+import { FaImage } from "@react-icons/all-files/fa/FaImage";
+import { FaHeading } from "@react-icons/all-files/fa/FaHeading";
+import { FaImages } from "@react-icons/all-files/fa/FaImages";
+import { FaLink } from "@react-icons/all-files/fa/FaLink";
+
 type IToolbarProps = {
   commandController: any;
   textController: any;

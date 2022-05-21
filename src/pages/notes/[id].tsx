@@ -1,5 +1,4 @@
-import { GetStaticPaths, GetStaticProps } from "next";
-import React, { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import BaseLayout from "../../components/core/layouts/BaseLayout";
 import { INote } from "../../models/Note";
 import { ExtendedNextPage } from "../../next";
@@ -19,11 +18,23 @@ import {
   unorderedListCommand,
   useTextAreaMarkdownEditor
 } from "react-mde";
-import Toolbar from "../../components/editor/Toolbar";
+import dynamic from "next/dynamic";
+const Toolbar = dynamic(() => import("../../components/editor/Toolbar"));
+import Router from "next/router";
+import useSwr from "swr";
 
-const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
-  const [title, setTitle] = useState<string | undefined>(note.title || "");
-  const [content, setContent] = useState<string>(note.content || "");
+const IndividualNotePage: ExtendedNextPage = () => {
+  console.log(Router.query);
+
+  const { data, error } = useSwr<{ note: INote }>(
+    Router.query.id ? `/notes/${Router.query.id}` : null,
+    { refreshInterval: 0 }
+  );
+
+  const note = data?.note;
+
+  const [title, setTitle] = useState<string | undefined>(note?.title || "");
+  const [content, setContent] = useState<string>(note?.content || "");
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
   const { ref, commandController, textController } = useTextAreaMarkdownEditor({
@@ -40,6 +51,21 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
       link: linkCommand
     }
   });
+
+  useEffect(() => {
+    if (note) {
+      if (!title) setTitle(note.title);
+      if (!content) setContent(note.content);
+    }
+  }, [note]);
+
+  if (!note) {
+    return (
+      <div className="flex flex-col items-center pb-6 h-fit">
+        <h3>404 Not found</h3>
+      </div>
+    );
+  }
 
   const onUpdate = async (e: FormEvent) => {
     e.preventDefault();
@@ -165,47 +191,3 @@ const IndividualNotePage: ExtendedNextPage = ({ note }: { note: INote }) => {
 IndividualNotePage.Layout = BaseLayout;
 
 export default IndividualNotePage;
-
-//@ts-ignore
-export const getStaticPaths: GetStaticPaths = async () => {
-  // Call an external API endpoint to get posts
-
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notes`);
-
-  const notes = await res.json();
-
-  if (res.status === 401) {
-    return { paths: [], fallback: "blocking" };
-  }
-
-  const paths = notes.notes?.map((note: INote) => ({
-    params: { id: note._id }
-  }));
-
-  return { paths, fallback: "blocking" };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/notes/${params?.id}`
-    );
-
-    if (res.status === 401) {
-      return {
-        props: {}
-      };
-    }
-    const note = await res.json();
-
-    return {
-      props: note
-    };
-  } catch (error) {
-    console.log(error);
-
-    return {
-      props: {} // will be passed to the page component as props
-    };
-  }
-};

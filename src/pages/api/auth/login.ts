@@ -36,7 +36,9 @@ export default async function handler(
     ) {
       const userId = user[0]._id;
 
-      return res.status(200).json({ token: signJwt(userId), loggedIn: true });
+      return res
+        .status(200)
+        .json({ token: await signJwt(userId), loggedIn: true });
     } else {
       res.status(403).end();
     }

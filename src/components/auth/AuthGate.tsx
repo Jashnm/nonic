@@ -3,7 +3,8 @@ import useTokenStore from "../../hooks/useAuthToken";
 import axios from "../../lib/axios";
 import Axios from "axios";
 import toast from "react-hot-toast";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye } from "@react-icons/all-files/ai/AiOutlineEye";
+import { AiOutlineEyeInvisible } from "@react-icons/all-files/ai/AiOutlineEyeInvisible";
 
 const AuthGate = () => {
   const [loading, setLoading] = useState(false);

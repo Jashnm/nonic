@@ -11,7 +11,7 @@ export interface INote {
 
 const NoteSchema = new mongoose.Schema<INote>(
   {
-    content: { type: String, required: true, index: "text" },
+    content: { type: String, required: true },
     title: { type: String, required: true, index: "text" },
     locked: Boolean
   },

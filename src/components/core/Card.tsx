@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import type { IconType } from "react-icons";
+import type { IconType } from "@react-icons/all-files";
 
 const Card: React.FC<{ title: string; Icon: IconType; theme: string }> = ({
   title,

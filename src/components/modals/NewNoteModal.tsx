@@ -1,9 +1,4 @@
 import { FormEvent, MutableRefObject, useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 const NewNoteModal: React.FC<{
   inputRef?: MutableRefObject<HTMLInputElement | null>;
@@ -11,9 +6,7 @@ const NewNoteModal: React.FC<{
   onClose: () => void;
 }> = ({ inputRef, onClose }) => {
   const [title, setTitle] = useState<string | undefined>("");
-  const [content, setContent] = useState<string | undefined>(
-    "**Hello world!!!**"
-  );
+  const [content, setContent] = useState<string | undefined>("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -49,7 +42,7 @@ const NewNoteModal: React.FC<{
             ✕
           </button>
 
-          <h2 className="ml-1 text-lg font-medium">Add Note</h2>
+          <h2 className="ml-1 text-lg font-medium">Add Quick Note</h2>
           <form className="flex mt-4 flex-col space-y-4" onSubmit={onSubmit}>
             <input
               ref={inputRef}
@@ -59,16 +52,6 @@ const NewNoteModal: React.FC<{
               placeholder="Title"
               className="input w-full mx-0.5 input-bordered"
             />
-            {/* 
-            <MDEditor
-              value={value}
-              onChange={setValue}
-              hideToolbar={true}
-              fullscreen={false}
-              height={400}
-              className="bg-primary"
-              placeholder="Contnent in markdown"
-            /> */}
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}

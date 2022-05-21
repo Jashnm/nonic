@@ -5,7 +5,8 @@ import useUser from "../hooks/useUser";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
 import Axios from "axios";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye } from "@react-icons/all-files/ai/AiOutlineEye";
+import { AiOutlineEyeInvisible } from "@react-icons/all-files/ai/AiOutlineEyeInvisible";
 
 const CardTemplate: React.FC<{ title: string }> = ({ title, children }) => {
   return (

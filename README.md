@@ -22,7 +22,7 @@ This is where Nonic comes to play. A simple self-hosted note taker application w
 
 ## One click Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FJashnm%2Fnonic&env=MONGODB_URI,NEXT_PUBLIC_BASE_URL,JWT_SECRET_KEY,CIPHR_KEY,MY_SECRET,NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,NEXT_PUBLIC_CLOUDINARY_NAME)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FJashnm%2Fnonic&env=MONGODB_URI,NEXT_PUBLIC_BASE_URL,JWT_SECRET_KEY,CIPHER_KEY,MY_SECRET,NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,NEXT_PUBLIC_CLOUDINARY_NAME)
 
 ## Development
 
@@ -40,7 +40,7 @@ npm i
 MONGODB_URI="" # Add your MongoDB databse URI
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 JWT_SECRET_KEY="" # JWT secret key for auth purposes
-CIPHR_KEY="" # Any string which will be part of the key to encrypt your notes
+CIPHER_KEY="" # Any string which will be part of the key to encrypt your notes
 MY_SECRET="" # Any code/password to reset your pin. Never reveal this to anyone
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="" # Cloudinary upload preset if want to upload local images in notes
 NEXT_PUBLIC_CLOUDINARY_NAME="" # Cloudinary name for the same above reason

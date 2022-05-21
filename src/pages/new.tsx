@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import BaseLayout from "../components/core/layouts/BaseLayout";
 import { ExtendedNextPage } from "../next";
 import toast from "react-hot-toast";
@@ -17,7 +17,8 @@ import {
   unorderedListCommand,
   useTextAreaMarkdownEditor
 } from "react-mde";
-import Toolbar from "../components/editor/Toolbar";
+import dynamic from "next/dynamic";
+const Toolbar = dynamic(() => import("../components/editor/Toolbar"));
 
 const NewNotePage: ExtendedNextPage = () => {
   const [title, setTitle] = useState<string | undefined>("");

@@ -36,6 +36,8 @@ export default async function handler(
       pin: hashedPin
     });
     await user.save();
-    return res.status(201).json({ token: signJwt(user._id), loggedIn: true });
+    return res
+      .status(201)
+      .json({ token: await signJwt(user._id), loggedIn: true });
   }
 }

@@ -31,11 +31,9 @@ export default async function handler(
       res.status(404).end();
     }
 
-    const key = process.env.CIPHR_KEY! as string;
-    res
-      .status(200)
-      .json({
-        note: { ...note.toJSON(), content: await decrypt(note.content, key) }
-      });
+    const key = process.env.CIPHER_KEY! as string;
+    res.status(200).json({
+      note: { ...note.toJSON(), content: await decrypt(note.content, key) }
+    });
   }
 }

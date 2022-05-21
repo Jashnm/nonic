@@ -8,6 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
     "argon2": "^0.28.5",
     "axios": "^0.26.1",
     "cloudinary": "^1.30.0",
@@ -16,7 +17,7 @@
     "draft-convert": "^2.1.12",
     "framer-motion": "^6.2.8",
     "highlight.js": "^11.5.0",
-    "jsonwebtoken": "^8.5.1",
+    "jose": "^4.8.1",
     "mongodb": "^4.4.1",
     "mongoose": "^6.2.9",
     "next": "12.1.0",
@@ -24,7 +25,6 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hot-toast": "^2.2.0",
-    "react-icons": "^4.3.1",
     "react-mde": "12.0.8",
     "remarkable": "^2.0.1",
     "swr": "^1.2.2",

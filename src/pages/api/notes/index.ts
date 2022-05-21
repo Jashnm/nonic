@@ -14,11 +14,11 @@ export default async function handler(
 ) {
   await connectToDatabase();
 
-  const key = process.env.CIPHR_KEY! as string;
+  const key = process.env.CIPHER_KEY! as string;
 
   if (req.method === "POST") {
     const { content, title } = req.body as { content: string; title: string };
-    const key = process.env.CIPHR_KEY! as string;
+    const key = process.env.CIPHER_KEY! as string;
     const encoded = await encrypt(content, key);
     const note = new Note({ content: encoded, title });
     await note.save();

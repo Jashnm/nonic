@@ -1,11 +1,9 @@
 import Head from "next/head";
 import BaseLayout from "../components/core/layouts/BaseLayout";
 import { ExtendedNextPage } from "../next";
-import {
-  IoSettingsOutline,
-  IoDocumentTextOutline,
-  IoAddOutline
-} from "react-icons/io5";
+import { IoSettingsOutline } from "@react-icons/all-files/io5/IoSettingsOutline";
+import { IoDocumentTextOutline } from "@react-icons/all-files/io5/IoDocumentTextOutline";
+import { IoAddOutline } from "@react-icons/all-files/io5/IoAddOutline";
 import Card from "../components/core/Card";
 import { useRef, useState } from "react";
 import NewNoteModal from "../components/modals/NewNoteModal";
