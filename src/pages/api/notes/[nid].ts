@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../../lib/mongodb";
 import Note, { INote } from "../../../models/Note";
-import { decrypt } from "../../../utils/cipher";
+import { decrypt, encrypt } from "../../../utils/cipher";
 type Data = {
   note?: INote;
 };
@@ -13,9 +13,15 @@ export default async function handler(
 ) {
   await connectToDatabase();
   const { nid } = req.query;
+  const key = process.env.CIPHER_KEY! as string;
+
   if (req.method === "PUT") {
     const body = JSON.parse(req.body);
-    let note = await Note.findByIdAndUpdate(nid, { ...body }, { new: true });
+    let note = await Note.findByIdAndUpdate(
+      nid,
+      { ...body, content: await encrypt(body.content, key) },
+      { new: true }
+    );
 
     if (!note) {
       res.status(404).end();
@@ -31,7 +37,6 @@ export default async function handler(
       res.status(404).end();
     }
 
-    const key = process.env.CIPHER_KEY! as string;
     res.status(200).json({
       note: { ...note.toJSON(), content: await decrypt(note.content, key) }
     });

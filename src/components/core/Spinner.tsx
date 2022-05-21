@@ -1,5 +1,3 @@
-import React from "react";
-
 const Spinner = () => {
   return (
     <svg className="spinner" viewBox="0 0 50 50">

@@ -3,21 +3,20 @@ import BaseLayout from "../../components/core/layouts/BaseLayout";
 import { ExtendedNextPage } from "../../next";
 import NoteCard from "../../components/core/NoteCard";
 import { INote } from "../../models/Note";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useNotes from "../../hooks/useNotes";
 import Spinner from "../../components/core/Spinner";
+import Fuse from "fuse.js";
 
 const NotesPage: ExtendedNextPage = () => {
   const [search, setSearch] = useState("");
   const loader = useRef<IntersectionObserver>();
+  const fuseInstance = useRef<Fuse<any>>();
 
-  const {
-    notes: notes_,
-    isFetchingNextPage,
-    loading,
-    fetchNextPage,
-    hasNextPage
-  } = useNotes({ query: search.length >= 3 ? search : "" });
+  const { notes, isFetchingNextPage, loading, fetchNextPage, hasNextPage } =
+    useNotes({});
+  let initRef = useRef(false);
+  const [notesFetched, setNotesFetched] = useState(false);
 
   const lastThoughtElementRef = useCallback(
     (node) => {
@@ -35,6 +34,44 @@ const NotesPage: ExtendedNextPage = () => {
     },
     [loading, fetchNextPage]
   );
+
+  useEffect(() => {
+    if (notes.length) {
+      setNotesFetched(true);
+    }
+  }, [notes]);
+
+  const [filteredNotes, setFilteredNotes] = useState<any[]>(notes);
+
+  useEffect(() => {
+    if (notesFetched && initRef.current === false) {
+      setFilteredNotes(notes);
+      initRef.current = true;
+    }
+  }, [notesFetched, initRef]);
+
+  const mapFilteredNotes = useCallback(() => {
+    if (search) {
+      if (notes) {
+        const results = fuseInstance.current?.search(search) || [];
+        setFilteredNotes(results.map((x) => x.item));
+      }
+    } else {
+      setFilteredNotes(notes);
+    }
+  }, [notes, search]);
+
+  useEffect(() => {
+    if (notes) {
+      fuseInstance.current = new Fuse(notes, {
+        keys: ["content", "title"]
+      });
+    }
+  }, [notes]);
+
+  useEffect(() => {
+    mapFilteredNotes();
+  }, [search]);
 
   return (
     <>
@@ -54,7 +91,7 @@ const NotesPage: ExtendedNextPage = () => {
       </div>
       <div className="mt-20 sm:mt-36" />
       <div className="grid flex-col flex-wrap justify-center grid-flow-row gap-6 pb-6 mx-4 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto sm:flex-row">
-        {notes_?.map((x: INote) => {
+        {filteredNotes?.map((x: INote) => {
           return <NoteCard key={x._id} note={x} />;
         })}
         {hasNextPage && !isFetchingNextPage ? (

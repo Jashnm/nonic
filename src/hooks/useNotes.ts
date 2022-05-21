@@ -3,13 +3,10 @@ import { INote } from "../models/Note";
 
 type getNotesTypes = {
   perPage?: number;
-  query?: string;
 };
 
-export default function useNotes({ perPage = 25, query }: getNotesTypes) {
+export default function useNotes({ perPage = 3 }: getNotesTypes) {
   let queryString = `/notes?perPage=${perPage}`;
-
-  if (!!query) queryString += `&query=${query}`;
 
   const { data, error, mutate, size, setSize } = useSWRInfinite<{
     notes: INote[];

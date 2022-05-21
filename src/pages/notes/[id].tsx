@@ -5,6 +5,7 @@ import { ExtendedNextPage } from "../../next";
 import md from "../../utils/markdown";
 import toast from "react-hot-toast";
 import { getRelativeTime } from "../../utils/dayjs";
+import Spinner from "../../components/core/Spinner";
 import {
   boldCommand,
   codeCommand,
@@ -24,8 +25,6 @@ import Router from "next/router";
 import useSwr from "swr";
 
 const IndividualNotePage: ExtendedNextPage = () => {
-  console.log(Router.query);
-
   const { data, error } = useSwr<{ note: INote }>(
     Router.query.id ? `/notes/${Router.query.id}` : null,
     { refreshInterval: 0 }
@@ -58,6 +57,11 @@ const IndividualNotePage: ExtendedNextPage = () => {
       if (!content) setContent(note.content);
     }
   }, [note]);
+  useEffect(() => {
+    if (ref && ref.current) {
+      ref.current.value = content;
+    }
+  }, [edit]);
 
   if (!note) {
     return (
@@ -83,6 +87,14 @@ const IndividualNotePage: ExtendedNextPage = () => {
     }
     setLoading(false);
   };
+
+  if (!note && !error) {
+    return (
+      <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -114,6 +126,20 @@ const IndividualNotePage: ExtendedNextPage = () => {
           placeholder="Title"
           className="flex-shrink-0 w-full input input-bordered"
         />
+        {/* <button
+          type="button"
+          onClick={() => {
+            let msg = new SpeechSynthesisUtterance();
+            msg.text = md.render(note.content);
+
+            const voices = speechSynthesis.getVoices();
+            msg.voice =
+              voices.find((x) => x.name.includes("India")) || voices[0];
+            window.speechSynthesis.speak(msg);
+          }}
+        >
+          Speak
+        </button> */}
 
         {edit ? (
           <>
