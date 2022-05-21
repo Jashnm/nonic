@@ -9,8 +9,6 @@ type getNotesTypes = {
 export default function useNotes({ perPage = 25, query }: getNotesTypes) {
   let queryString = `/notes?perPage=${perPage}`;
 
-  console.log("heyy");
-
   if (!!query) queryString += `&query=${query}`;
 
   const { data, error, mutate, size, setSize } = useSWRInfinite<{

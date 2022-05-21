@@ -62,8 +62,6 @@ export default async function handler(
       .limit(Number(perPage))
       .lean();
 
-    // console.log(notes);
-
     notes = await Promise.all(
       notes.map(async (x) => ({
         ...x,
