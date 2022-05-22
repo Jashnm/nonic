@@ -35,13 +35,13 @@ npm i
 2. Add Environment variables -
 
 ```bash
-MONGODB_URI="" # Add your MongoDB databse URI
-# NEXT_PUBLIC_BASE_URL="http://localhost:3000" -- To be added only when not using Vercel
-JWT_SECRET_KEY="" # JWT secret key for auth purposes
-CIPHR_KEY="" # Any string which will be part of the key to encrypt your notes
-MY_SECRET="" # Any code/password to reset your pin. Never reveal this to anyone
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="" # Cloudinary upload preset if want to upload local images in notes
-NEXT_PUBLIC_CLOUDINARY_NAME="" # Cloudinary name for the same above reason
+MONGODB_URI= # Add your MongoDB databse URI
+NEXT_PUBLIC_BASE_URL=http://localhost:3000 # Add you domain or deployment URL after deployment is done
+JWT_SECRET_KEY= # JWT secret key for auth purposes
+CIPHR_KEY= # Any string which will be part of the key to encrypt your notes
+MY_SECRET= # Any code/password to reset your pin. Never reveal this to anyone
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET= # Cloudinary upload preset if want to upload local images in notes
+NEXT_PUBLIC_CLOUDINARY_NAME= # Cloudinary name for the same above reason
 ```
 
 3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

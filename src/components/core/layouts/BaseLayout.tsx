@@ -14,21 +14,6 @@ const BaseLayout: React.FC = ({ children }) => {
     refreshInterval: 0
   });
 
-  // const handleScroll = useCallback(() => {
-  //   const el = document.querySelector(".nav-btns")!.classList;
-  //   if (window.scrollY > 200) {
-  //     if (!el.contains("bg-neutral")) el.add("bg-neutral");
-  //   } else {
-  //     el.remove("bg-neutral");
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   window.addEventListener("scroll", handleScroll);
-
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [handleScroll]);
-
   return (
     <>
       {!data?.exists ? (
