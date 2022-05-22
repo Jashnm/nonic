@@ -20,7 +20,7 @@ This is where Nonic comes to play. A simple self-hosted note taker application w
 
 ## One click Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FJashnm%2Fnonic&env=MONGODB_URI,NEXT_PUBLIC_BASE_URL,JWT_SECRET_KEY,CIPHR_KEY,MY_SECRET,NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,NEXT_PUBLIC_CLOUDINARY_NAME)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FJashnm%2Fnonic&env=MONGODB_URI,NEXT_PUBLIC_BASE_URL,JWT_SECRET_KEY,CIPHER_KEY,MY_SECRET,NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,NEXT_PUBLIC_CLOUDINARY_NAME)
 
 ## Development
 

@@ -36,7 +36,7 @@ const IndividualNotePage: ExtendedNextPage = () => {
   const note = data?.note;
 
   const [title, setTitle] = useState<string | undefined>("");
-
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
   const [showDeletionModal, setShowDeletionModal] = useState(false);
@@ -54,18 +54,20 @@ const IndividualNotePage: ExtendedNextPage = () => {
       link: linkCommand
     }
   });
+  useEffect(() => {
+    if (ref && ref.current) {
+      ref.current.style.height = "480px";
+      const scrollHeight = ref.current.scrollHeight;
+      ref.current.style.height = scrollHeight + "px";
+    }
+  }, [content]);
 
   useEffect(() => {
     if (data && data.note) {
       setTitle(data.note.title);
+      setContent(data.note.content);
     }
   }, [data, setTitle]);
-
-  useEffect(() => {
-    if (ref && ref.current && data && edit) {
-      ref.current.value = data.note.content;
-    }
-  }, [edit, data, ref]);
 
   if (!note && !error) {
     return (
@@ -93,7 +95,6 @@ const IndividualNotePage: ExtendedNextPage = () => {
         content
       });
       mutate();
-
       toast.success("Updated!");
 
       setEdit(false);
@@ -157,19 +158,13 @@ const IndividualNotePage: ExtendedNextPage = () => {
                 textController={textController}
               />
               <textarea
-                className="textarea min-h-[480px] md:min-h-[580px] textarea-bordered rounded-tl-none"
+                className="textarea textarea-bordered rounded-tl-none"
                 ref={ref}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
                 placeholder="I'm a markdown editor"
               />
             </div>
-
-            {/* <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="textarea min-h-[480px] sm:min-h-[560px] textarea-bordered"
-            placeholder="Markdown supported content"
-            rows={8}
-            ></textarea> */}
           </>
         ) : (
           <div className="relative w-full">

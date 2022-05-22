@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import BaseLayout from "../components/core/layouts/BaseLayout";
 import { ExtendedNextPage } from "../next";
 import toast from "react-hot-toast";
@@ -23,7 +23,7 @@ const Toolbar = dynamic(() => import("../components/editor/Toolbar"));
 const NewNotePage: ExtendedNextPage = () => {
   const [title, setTitle] = useState<string | undefined>("");
   const [loading, setLoading] = useState(false);
-  const [edit, setEdit] = useState(false);
+  const [content, setContent] = useState("");
 
   const { ref, commandController, textController } = useTextAreaMarkdownEditor({
     commandMap: {
@@ -39,6 +39,14 @@ const NewNotePage: ExtendedNextPage = () => {
       link: linkCommand
     }
   });
+
+  useEffect(() => {
+    if (ref && ref.current) {
+      ref.current.style.height = "480px";
+      const scrollHeight = ref.current.scrollHeight;
+      ref.current.style.height = scrollHeight + "px";
+    }
+  }, [content]);
 
   const onUpdate = async (e: FormEvent) => {
     e.preventDefault();
@@ -78,9 +86,11 @@ const NewNotePage: ExtendedNextPage = () => {
             textController={textController}
           />
           <textarea
-            className="textarea min-h-[480px] md:min-h-[580px] textarea-bordered rounded-tl-none"
+            className="textarea textarea-bordered rounded-tl-none"
             ref={ref}
             placeholder="I'm a markdown editor"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           />
         </div>
 
@@ -95,7 +105,7 @@ const NewNotePage: ExtendedNextPage = () => {
 
         <div className="flex space-x-4 justify-end">
           <button
-            onClick={() => setEdit(false)}
+            onClick={Router.back}
             className={`btn btn-accent px-8 ${loading && "loading"}`}
           >
             Cancel
