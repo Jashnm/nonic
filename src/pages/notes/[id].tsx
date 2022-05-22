@@ -23,19 +23,23 @@ import dynamic from "next/dynamic";
 const Toolbar = dynamic(() => import("../../components/editor/Toolbar"));
 import Router from "next/router";
 import useSwr from "swr";
+import ConfirmNoteDeleteModal from "../../components/modals/ConfirmNoteDeleteModal";
+import axios from "../../lib/axios";
 
 const IndividualNotePage: ExtendedNextPage = () => {
-  const { data, error } = useSwr<{ note: INote }>(
-    Router.query.id ? `/notes/${Router.query.id}` : null,
-    { refreshInterval: 0 }
+  const { id } = Router.query;
+  const { data, error, mutate } = useSwr<{ note: INote }>(
+    id ? `/notes/${id}` : null,
+    { refreshInterval: 0, revalidateOnMount: true }
   );
 
   const note = data?.note;
 
-  const [title, setTitle] = useState<string | undefined>(note?.title || "");
-  const [content, setContent] = useState<string>(note?.content || "");
+  const [title, setTitle] = useState<string | undefined>("");
+
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
   const { ref, commandController, textController } = useTextAreaMarkdownEditor({
     commandMap: {
       bold: boldCommand,
@@ -52,16 +56,24 @@ const IndividualNotePage: ExtendedNextPage = () => {
   });
 
   useEffect(() => {
-    if (note) {
-      if (!title) setTitle(note.title);
-      if (!content) setContent(note.content);
+    if (data && data.note) {
+      setTitle(data.note.title);
     }
-  }, [note]);
+  }, [data, setTitle]);
+
   useEffect(() => {
-    if (ref && ref.current) {
-      ref.current.value = content;
+    if (ref && ref.current && data && edit) {
+      ref.current.value = data.note.content;
     }
-  }, [edit]);
+  }, [edit, data, ref]);
+
+  if (!note && !error) {
+    return (
+      <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
+        <Spinner />
+      </div>
+    );
+  }
 
   if (!note) {
     return (
@@ -74,27 +86,22 @@ const IndividualNotePage: ExtendedNextPage = () => {
   const onUpdate = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const content = ref.current?.value;
     try {
-      await fetch(`/api/notes/${note._id}`, {
-        method: "PUT",
-        body: JSON.stringify({ title, content: ref.current?.value })
+      await axios.put(`/notes/${note._id}`, {
+        title,
+        content
       });
+      mutate();
 
       toast.success("Updated!");
+
       setEdit(false);
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
   };
-
-  if (!note && !error) {
-    return (
-      <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
-        <Spinner />
-      </div>
-    );
-  }
 
   return (
     <>
@@ -125,6 +132,7 @@ const IndividualNotePage: ExtendedNextPage = () => {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
           className="flex-shrink-0 w-full input input-bordered"
+          readOnly={!edit ? true : false}
         />
         {/* <button
           type="button"
@@ -167,7 +175,7 @@ const IndividualNotePage: ExtendedNextPage = () => {
           <div className="relative w-full">
             <div
               className="min-h-[242px] max-w-none prose prose-img:text-center prose-img:w-80 prose-base lg:prose-lg px-4 py-2 textarea textarea-bordered h-full"
-              dangerouslySetInnerHTML={{ __html: md.render(content) }}
+              dangerouslySetInnerHTML={{ __html: md.render(data.note.content) }}
             ></div>
             <label
               tabIndex={0}
@@ -194,6 +202,37 @@ const IndividualNotePage: ExtendedNextPage = () => {
                 />
               </svg>
             </label>
+            <label
+              tabIndex={0}
+              title="delete"
+              onClick={() => setShowDeletionModal(true)}
+              className="absolute z-10 p-2 rounded-full cursor-pointer bg-accent-content border-accent-content top-20 right-4"
+            >
+              <svg
+                className="text-accent w-7 h-7"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M4.375 5.833c0-.483.392-.875.875-.875h17.5c.483 0 .875.392.875.875v19.834a.875.875 0 0 1-.875.875H5.25a.875.875 0 0 1-.875-.875V5.833Zm1.75.875v18.084h15.75V6.708H6.125Z"
+                  fill="currentColor"
+                />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M11.667 10.792c.483 0 .875.392.875.875v7.583a.875.875 0 0 1-1.75 0v-7.583c0-.483.392-.875.875-.875ZM16.333 10.792c.483 0 .875.392.875.875v7.583a.875.875 0 1 1-1.75 0v-7.583c0-.483.392-.875.875-.875ZM1.458 5.833c0-.483.392-.875.875-.875h23.333a.875.875 0 1 1 0 1.75H2.333a.875.875 0 0 1-.875-.875Z"
+                  fill="currentColor"
+                />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M10.484 1.913a.875.875 0 0 1 .768-.455h5.534c.322 0 .619.177.771.461l1.88 3.5a.875.875 0 0 1-.77 1.29H9.332a.875.875 0 0 1-.767-1.296l1.918-3.5Zm1.286 1.295-.96 1.75h6.393l-.94-1.75H11.77Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </label>
           </div>
         )}
         {edit && (
@@ -210,6 +249,15 @@ const IndividualNotePage: ExtendedNextPage = () => {
           </div>
         )}
       </form>
+      {showDeletionModal && (
+        <ConfirmNoteDeleteModal
+          id={Router.query.id as string}
+          onClose={() => {
+            setShowDeletionModal(false);
+            Router.push("/notes");
+          }}
+        />
+      )}
     </>
   );
 };

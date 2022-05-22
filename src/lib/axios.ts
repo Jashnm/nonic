@@ -1,7 +1,7 @@
 import Axios from "axios";
 import useTokenStore from "../hooks/useAuthToken";
 
-const baseUrl = process.env.VERCEL_URL || "http://localhost:3000"; // process.env.NEXT_PUBLIC_BASE_URL -- Enable this, and add env var if not using Vercel;
+const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"; // process.env.NEXT_PUBLIC_BASE_URL -- Enable this, and add env var if not using Vercel;
 
 const axios = Axios.create({
   baseURL: `${baseUrl}/api`

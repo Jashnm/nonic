@@ -16,7 +16,7 @@ export default async function handler(
   const key = process.env.CIPHER_KEY! as string;
 
   if (req.method === "PUT") {
-    const body = JSON.parse(req.body);
+    const body = req.body;
     let note = await Note.findByIdAndUpdate(
       nid,
       { ...body, content: await encrypt(body.content, key) },
@@ -37,8 +37,17 @@ export default async function handler(
       res.status(404).end();
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       note: { ...note.toJSON(), content: await decrypt(note.content, key) }
     });
+  }
+  if (req.method === "DELETE") {
+    let note = await Note.findByIdAndDelete(nid);
+
+    if (!note) {
+      res.status(404).end();
+    }
+
+    return res.status(200).end();
   }
 }

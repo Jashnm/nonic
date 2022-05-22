@@ -15,8 +15,6 @@ const NotesPage: ExtendedNextPage = () => {
 
   const { notes, isFetchingNextPage, loading, fetchNextPage, hasNextPage } =
     useNotes({});
-  let initRef = useRef(false);
-  const [notesFetched, setNotesFetched] = useState(false);
 
   const lastThoughtElementRef = useCallback(
     (node) => {
@@ -35,20 +33,7 @@ const NotesPage: ExtendedNextPage = () => {
     [loading, fetchNextPage]
   );
 
-  useEffect(() => {
-    if (notes.length) {
-      setNotesFetched(true);
-    }
-  }, [notes]);
-
   const [filteredNotes, setFilteredNotes] = useState<any[]>(notes);
-
-  useEffect(() => {
-    if (notesFetched && initRef.current === false) {
-      setFilteredNotes(notes);
-      initRef.current = true;
-    }
-  }, [notesFetched, initRef]);
 
   const mapFilteredNotes = useCallback(() => {
     if (search) {
@@ -90,10 +75,14 @@ const NotesPage: ExtendedNextPage = () => {
         />
       </div>
       <div className="mt-20 sm:mt-36" />
-      <div className="grid flex-col flex-wrap justify-center grid-flow-row gap-6 pb-6 mx-4 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto sm:flex-row">
-        {filteredNotes?.map((x: INote) => {
-          return <NoteCard key={x._id} note={x} />;
-        })}
+      <div className="grid flex-col flex-wrap justify-center grid-flow-row gap-6 pb-6 mx-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto sm:flex-row">
+        {!!search
+          ? filteredNotes.map((x: INote) => {
+              return <NoteCard key={x._id} note={x} />;
+            })
+          : notes.map((x: INote) => {
+              return <NoteCard key={x._id} note={x} />;
+            })}
         {hasNextPage && !isFetchingNextPage ? (
           <div ref={lastThoughtElementRef} />
         ) : loading || isFetchingNextPage ? (

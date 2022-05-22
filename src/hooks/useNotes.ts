@@ -5,14 +5,15 @@ type getNotesTypes = {
   perPage?: number;
 };
 
-export default function useNotes({ perPage = 3 }: getNotesTypes) {
+export default function useNotes({ perPage = 25 }: getNotesTypes) {
   let queryString = `/notes?perPage=${perPage}`;
 
   const { data, error, mutate, size, setSize } = useSWRInfinite<{
     notes: INote[];
   }>((index) => `${queryString}&page=${index}`, {
     refreshInterval: 0,
-    revalidateOnFocus: false
+    revalidateOnFocus: false,
+    revalidateOnMount: true
   });
 
   const loading = !data && !error;
