@@ -69,7 +69,7 @@ const IndividualNotePage: ExtendedNextPage = () => {
     }
   }, [data, setTitle]);
 
-  if (!note && !error) {
+  if (!data && !error) {
     return (
       <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
         <Spinner />

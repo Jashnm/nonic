@@ -64,7 +64,7 @@ const NotesPage: ExtendedNextPage = () => {
     mapFilteredNotes();
   }, [search]);
 
-  if (!notes.length || (search && !filteredNotes.length && !error)) {
+  if ((!notes.length || (search && !filteredNotes.length)) && !error) {
     <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
       <Spinner />
     </div>;
