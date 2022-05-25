@@ -13,8 +13,14 @@ const NotesPage: ExtendedNextPage = () => {
   const loader = useRef<IntersectionObserver>();
   const fuseInstance = useRef<Fuse<any>>();
 
-  const { notes, isFetchingNextPage, loading, fetchNextPage, hasNextPage } =
-    useNotes({});
+  const {
+    notes,
+    isFetchingNextPage,
+    error,
+    loading,
+    fetchNextPage,
+    hasNextPage
+  } = useNotes({});
 
   const lastThoughtElementRef = useCallback(
     (node) => {
@@ -58,6 +64,12 @@ const NotesPage: ExtendedNextPage = () => {
     mapFilteredNotes();
   }, [search]);
 
+  if (!notes.length || (search && !filteredNotes.length && !error)) {
+    <div className="flex flex-col items-center pb-6 space-y-3 h-fit">
+      <Spinner />
+    </div>;
+  }
+
   return (
     <>
       <Head>
@@ -75,6 +87,9 @@ const NotesPage: ExtendedNextPage = () => {
         />
       </div>
       <div className="mt-20 sm:mt-36" />
+      {(!notes.length || (!!search && !filteredNotes.length)) && (
+        <div className="text-center">Nothing here!</div>
+      )}
       <div className="grid flex-col flex-wrap justify-center grid-flow-row gap-6 pb-6 mx-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 auto-rows-auto sm:mx-auto sm:flex-row">
         {!!search
           ? filteredNotes.map((x: INote) => {

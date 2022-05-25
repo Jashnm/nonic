@@ -158,7 +158,7 @@ const IndividualNotePage: ExtendedNextPage = () => {
                 textController={textController}
               />
               <textarea
-                className="textarea textarea-bordered rounded-tl-none"
+                className="textarea min-h-[480px] textarea-bordered rounded-tl-none"
                 ref={ref}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -167,7 +167,7 @@ const IndividualNotePage: ExtendedNextPage = () => {
             </div>
           </>
         ) : (
-          <div className="relative w-full">
+          <div className="relative group w-full">
             <div
               className="min-h-[242px] max-w-none prose prose-img:text-center prose-img:w-80 prose-base lg:prose-lg px-4 py-2 textarea textarea-bordered h-full"
               dangerouslySetInnerHTML={{ __html: md.render(data.note.content) }}
@@ -176,10 +176,10 @@ const IndividualNotePage: ExtendedNextPage = () => {
               tabIndex={0}
               title="edit"
               onClick={() => setEdit(true)}
-              className="absolute z-10 p-2 rounded-full cursor-pointer bg-accent-content border-accent-content top-4 right-4"
+              className="absolute z-10 p-2 rounded-full hidden group-hover:block cursor-pointer bg-accent-content bg-opacity-10 border-accent-content top-4 right-4"
             >
               <svg
-                className="text-accent w-7 h-7"
+                className="text-accent-content w-7 h-7"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -201,10 +201,10 @@ const IndividualNotePage: ExtendedNextPage = () => {
               tabIndex={0}
               title="delete"
               onClick={() => setShowDeletionModal(true)}
-              className="absolute z-10 p-2 rounded-full cursor-pointer bg-accent-content border-accent-content top-20 right-4"
+              className="absolute z-10 p-2 rounded-full hidden group-hover:block cursor-pointer bg-accent-content bg-opacity-10 border-accent-content top-20 right-4"
             >
               <svg
-                className="text-accent w-7 h-7"
+                className="text-accent-content w-7 h-7"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
